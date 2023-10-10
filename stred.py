@@ -7,4 +7,4 @@ quu.put(2)
 print(quu.get())
 print(quu.get())
 
-
+print("coucou")
