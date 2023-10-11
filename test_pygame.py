@@ -15,7 +15,10 @@ bkg = (150,150,150)
 mainc=(40, 40, 40)
 line=(200,200,255)
 answer = multiprocessing.Queue()
-  
+answer.put("-x/+y/+x/-y")
+answer.put("-x/+y/+x/-y")
+answer.put("-x/+y/+x/-y")
+answer.put("+y/+x/-y/-x")
 # displaying a window and background
 surface = pygame.display.set_mode((1505, 1010)) 
 surface.fill(bkg)
@@ -53,7 +56,7 @@ def debut(player):
 
 
 #function : mouve one player in a specified direction
-def avancer(player,x,y,direction,color):
+def avancer(x,y,direction,color):
     #define numer of pixels for an horizontal (x) or vertical (y) mouve
     xunit = 45
     yunit=30
@@ -117,18 +120,22 @@ def changementDir (old,newdir):
 
 #function : convert a pixel position in an integer index
 def Xconvert_px_to_index(xpx):
-    if player==3:
+    if playercurrent==3:
         x=int(xpx*33/1485)
     else:
         x=int(xpx*33/1485)+1
     return x
 def Yconvert_px_to_index(ypx):
-    if player==3:
+    if playercurrent==3:
         y=int(ypx*33/990)
     else:
         y=int(ypx*33/990)+1
     return y
 
+def erase(color):
+    arr = pygame.PixelArray(surface)
+    arr.replace(color, bkg)
+    del arr
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
    
 # Drawing background grid
@@ -141,21 +148,37 @@ for i in range(10,991,30):
     pygame.draw.line(surface,line,(10,i),(1495,i))
 pygame.draw.line(surface,line,(10,1495),(1000,1495))
 
-pygame.display.flip() #refresh rendering
-  
+pygame.display.flip() #refresh rendering  
 
 # creat setup variable and initialize game
-player=3
-start,color = debut(player)
-x,y=start
-globalDirection = "-y"
+playercurrent = 1
+direction_current="+x"
+
+
+start1,color1 = debut(1)
+x1,y1=start1
+globalDirection = "+y"
+
+start2,color2 = debut(2)
+x2,y2=start2
+gD2 = "+x"
+
+start3,color3 = debut(3)
+x3,y3=start3
+gD3 = "-y"
+
+start4,color4 = debut(4)
+x4,y4=start4
+gD4 = "-x"
+
+#sck= CliReso.ConnectionClient(globalDirection,answer)
 
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
   
 # Game Loop
 while True: 
 
-    clock.tick(10) #manage fps rate 
+    clock.tick(5) #manage fps rate 
 
     # Check for event if user has pushed any event
     for event in pygame.event.get():   
@@ -168,27 +191,36 @@ while True:
         #user key press event
         if event.type == pygame.KEYDOWN:
             #manage vertical mouve
-            if globalDirection=="+y" or globalDirection=="-y":
+            if direction_current=="+y" or direction_current=="-y":
                 if event.key == K_RIGHT:
-                    globalDirection=changementDir(globalDirection,"D")
+                    direction_current=changementDir(direction_current,"D")
                 if event.key == K_LEFT:
-                    globalDirection=changementDir(globalDirection,"G")
+                    direction_current=changementDir(direction_current,"G")
 
             #manage horizontal mouve
-            elif globalDirection=="+x" or globalDirection=="-x":
+            elif direction_current=="+x" or direction_current=="-x":
                 if event.key == K_UP:
-                    globalDirection=changementDir(globalDirection,"H")
+                    direction_current=changementDir(direction_current,"H")
                 if event.key == K_DOWN:
-                    globalDirection=changementDir(globalDirection,"B")
+                    direction_current=changementDir(direction_current,"B")
+        
+        #CliReso.Send(direction_current,sck)
     
-    CliReso.ConnectionClient(globalDirection,answer)
-    update= answer.get()
-    
+    if answer.empty()==False:
+        update= answer.get()
+        up_split = update.split('/')
+        globalDirection = up_split[0]
+        gD2= up_split[1]
+        gD3 = up_split[2]
+        gD4 = up_split[3]
 
     # look the save matrix (maingame.tab), if case are free, move forward
-    if maingame.jouer(player,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
-        x,y=avancer(player,x,y,globalDirection,color)
-
+    #if maingame.jouer(playercurrent,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
+    x1,y1=avancer(x1,y1,globalDirection,color1)
+    x2,y2=avancer(x2,y2,gD2,color2)
+    x3,y3=avancer(x3,y3,gD3,color3)
+    x4,y4=avancer(x4,y4,gD4,color4)
+    
 
         
 
