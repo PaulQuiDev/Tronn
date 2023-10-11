@@ -8,9 +8,20 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind(("127.0.0.1", 8888))
 server_socket.listen()
+# 1er étape
+manager = multiprocessing.Manager()
+clienListe = manager.list()
 
 
 # initialisation truc important ========================
+
+def SarteServeur():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.bind(("127.0.0.1", 8888))
+    server_socket.listen()
+
+
 
 
 def recoit():# connection privilégier de J1
@@ -21,7 +32,8 @@ def recoit():# connection privilégier de J1
             print("J1 déconnecter ¯\_(ツ)_/¯")
             server_socket.close()
             break
-        print(data)
+        #queuJ1.put(str(data)[2:-1])
+        print(str(data)[2:-1])
 
 
 def recoitTout(client,id):
@@ -64,11 +76,12 @@ def sendAll():
 client_socket, client_addr = server_socket.accept()
 print(f"New connection from {client_addr} to J1")
 
-clienListe = []
+
 clienListe.append((client_socket, client_addr))
 
 thrconect = threading.Thread(group=None, target=recoit)
 thrconect.start()
+
 
 thrlien = threading.Thread(group=None, target=connect)
 thrlien.start()
@@ -77,13 +90,15 @@ thrlien.start()
 # connecter = = = = = =  = = = = = = = = = = =
 
 
-while True:
-    s = input()
-    client_socket.send(s.encode())
-    if s[0] == "A":
-        try:
-            for i in range(len(clienListe) - 1):
-                clienListe[i + 1][0].send(s.encode())
-
-        except:
-            print("erreur send")
+#while True:
+ #   s = input()
+  #  client_socket.send(s.encode())
+   # if s[0] == "A":
+    #    try:
+     #       for i in range(len(clienListe) - 1):
+      #          clienListe[i + 1][0].send(s.encode())
+#
+ #       except:
+  #          print("erreur send")
+   # if s[0] == 'B':
+    #    print(queuJ1.get())
