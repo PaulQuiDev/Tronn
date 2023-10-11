@@ -36,6 +36,7 @@ def ConnectionClient(message, queue):
     sck.send(message.encode())
     return sck
 
+
 def Send(message,sck):
     sck.send(message.encode())
 
