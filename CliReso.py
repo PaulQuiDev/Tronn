@@ -2,6 +2,7 @@ import socket
 import multiprocessing
 import threading
 
+
 #importe ===========================
 
 
@@ -28,9 +29,23 @@ def ConnectionClient(message, queue):
 
     #connecter =  = = = = = = = = = = = = = = = = =
 
+
     thread = threading.Thread(group = None, target = receptionClient,args=(sck,queue))
     thread.start()
 
-    while True:
-        sck.send(message.encode())
+    sck.send(message.encode())
+    return sck
+
+def Send(message,sck):
+    sck.send(message.encode())
+
+if __name__ == "__main__":
+    queu = multiprocessing.Queue()
+
+    sck = ConnectionClient('conecter' , queu)
+
+    while True :
+        s = input()
+        #print(queu.get())
+        Send(s,sck)
 
