@@ -2,7 +2,9 @@
 import pygame 
 from pygame.locals import *
 import sys
+import multiprocessing
 import maingame
+import CliReso
 
 # initializing imported module, clock and colors
 pygame.init() 
@@ -12,6 +14,7 @@ start=(0,0)
 bkg = (150,150,150)
 mainc=(40, 40, 40)
 line=(200,200,255)
+answer = multiprocessing.Queue()
   
 # displaying a window and background
 surface = pygame.display.set_mode((1505, 1010)) 
@@ -178,6 +181,10 @@ while True:
                 if event.key == K_DOWN:
                     globalDirection=changementDir(globalDirection,"B")
     
+    CliReso.ConnectionClient(globalDirection,answer)
+    update= answer.get()
+    
+
     # look the save matrix (maingame.tab), if case are free, move forward
     if maingame.jouer(player,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
         x,y=avancer(player,x,y,globalDirection,color)

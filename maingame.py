@@ -37,6 +37,13 @@ def jouer(player,x,y,tab):
     else:
         return False
     
+def erase(player,tab):
+    for i in range(rows):
+        for j in range(cols):
+            if tab[i][j]==player:
+                tab[i][j]=0
+    
+    
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # print tab in terminal
