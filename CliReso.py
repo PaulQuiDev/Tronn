@@ -18,6 +18,7 @@ def receptionClient(sck, queue):
             sck.close()
             break
         queue.put(data)
+        #print(data)
 
 
 # les fonctions =======================

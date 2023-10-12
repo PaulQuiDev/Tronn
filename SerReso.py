@@ -4,27 +4,31 @@ import threading
 
 # les imports =====================================
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server_socket.bind(("127.0.0.1", 8888))
-server_socket.listen()
-# 1er étape
-manager = multiprocessing.Manager()
-clienListe = manager.list()
 
 
 # initialisation truc important ========================
 
-def SarteServeur():
+def StartServeur(ipNb):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind(("127.0.0.1", 8888))
+    server_socket.bind((f"{ipNb}", 8888))
     server_socket.listen()
+    return server_socket
+    
+
+def ConnectJoueur(server_socket,clienListe):
+    while len(clienListe) < 4:
+       client_socket1, client_addr1 = server_socket.accept()
+       clienListe.append((client_socket1, client_addr1))
+       print(f"New connection from {client_addr1} to J{len(clienListe)}")
+       threading.Thread(group=None, target=recoitTout, args=(server_socket,client_socket1,len(clienListe))).start()
 
 
+def ServeurClose(server_socket):
+    server_socket.close()
 
 
-def recoit():# connection privilégier de J1
+def recoit(server_socket,client_socket):# connection privilégier de J1
     while True:
         # or 'with lock:' (instead of acquire and release)
         data = client_socket.recv(1024)
@@ -36,7 +40,7 @@ def recoit():# connection privilégier de J1
         print(str(data)[2:-1])
 
 
-def recoitTout(client,id):
+def recoitTout(server_socket,client,id):
     while True:
         # or 'with lock:' (instead of acquire and release)
         #print("reception")
@@ -48,57 +52,46 @@ def recoitTout(client,id):
         print(f"J{id}:{str(data)[2:-1]}")
 
 
-def connect():
+def connect(server_socket):
     while True:
         if len(clienListe) < 4:
             client_socket1, client_addr1 = server_socket.accept()
             clienListe.append((client_socket1, client_addr1))
             print(f"New connection from {client_addr1} to J{len(clienListe)}")
-            threading.Thread(group=None, target=recoitTout, args=(client_socket1,len(clienListe))).start()
+            threading.Thread(group=None, target=recoitTout, args=(server_socket,client_socket1,len(clienListe))).start()
 
 
-def sendAll():
-    s = input()
-    client_socket.send(s.encode())
-    if s[0] == "A":
-        s= s[1:]
-        try:
-            for i in range(len(clienListe) - 1):
-                clienListe[i + 1][0].send(s.encode())
+def sendAll(clienListe, message):
+        
+    for i in range(len(clienListe) ):
+           #print(i)
+           #print(clienListe[i][0])
+           try:
+                clienListe[i][0].send(message.encode())
+           except:
+                print(f"erreur send to J{i}")
 
-        except:
-            print("erreur send")
+def sendTo(client_socket,message):
+    client_socket.send(message.encode())
+
 
 # les definitions =============================
 
 
-#  = = = = = = = = = = = = = = = = = == = = = = =
-client_socket, client_addr = server_socket.accept()
-print(f"New connection from {client_addr} to J1")
+
+if __name__ == "__main__":
+    manager = multiprocessing.Manager()
+    clienListe = manager.list()
+
+    serveurSocket = StartServeur("127.0.0.1")
+    threading.Thread(group=None, target=ConnectJoueur, args=(serveurSocket,clienListe)).start() 
+    #lancer fonction connectJoueur()
+    while True:
+        s = input()
+        sendAll(clienListe,s)
+        
+        
 
 
-clienListe.append((client_socket, client_addr))
-
-thrconect = threading.Thread(group=None, target=recoit)
-thrconect.start()
 
 
-thrlien = threading.Thread(group=None, target=connect)
-thrlien.start()
-
-
-# connecter = = = = = =  = = = = = = = = = = =
-
-
-#while True:
- #   s = input()
-  #  client_socket.send(s.encode())
-   # if s[0] == "A":
-    #    try:
-     #       for i in range(len(clienListe) - 1):
-      #          clienListe[i + 1][0].send(s.encode())
-#
- #       except:
-  #          print("erreur send")
-   # if s[0] == 'B':
-    #    print(queuJ1.get())
