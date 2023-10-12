@@ -47,4 +47,4 @@ def erase(player,tab):
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # print tab in terminal
-affichage(tab)
+#affichage(tab)

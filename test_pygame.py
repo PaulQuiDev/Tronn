@@ -15,10 +15,10 @@ bkg = (150,150,150)
 mainc=(40, 40, 40)
 line=(200,200,255)
 answer = multiprocessing.Queue()
+'''answer.put("-x/+y/+x/-y")
 answer.put("-x/+y/+x/-y")
 answer.put("-x/+y/+x/-y")
-answer.put("-x/+y/+x/-y")
-answer.put("+y/+x/-y/-x")
+answer.put("+y/+x/-y/-x")'''
 # displaying a window and background
 surface = pygame.display.set_mode((1505, 1010)) 
 surface.fill(bkg)
@@ -63,19 +63,19 @@ def avancer(x,y,direction,color):
     if direction =="+x":
         newx= x+xunit
         newy = y
-        maingame.affichage(maingame.tab)
+        
     if direction =="-x":
         newx=x-xunit
         newy = y
-        maingame.affichage(maingame.tab)
+        
     if direction =="+y":
         newx = x
         newy= y+yunit
-        maingame.affichage(maingame.tab)
+        
     if direction =="-y":
         newx=x
         newy=y-yunit
-        maingame.affichage(maingame.tab)
+        
 
     #bloc the line in the window
     if newx>1495:
@@ -171,7 +171,7 @@ start4,color4 = debut(4)
 x4,y4=start4
 gD4 = "-x"
 
-#sck= CliReso.ConnectionClient(globalDirection,answer)
+sck= CliReso.ConnectionClient(answer)
 
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
   
@@ -203,8 +203,8 @@ while True:
                     direction_current=changementDir(direction_current,"H")
                 if event.key == K_DOWN:
                     direction_current=changementDir(direction_current,"B")
-        
-        #CliReso.Send(direction_current,sck)
+        if sck!="E":
+            CliReso.Send(direction_current,sck)
     
     if answer.empty()==False:
         update= answer.get()

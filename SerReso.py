@@ -41,6 +41,7 @@ def ServeurClose(server_socket):
 
 
 def recoitTout(server_socket,client,id,clientrequest):
+    data2= ""
     while True:
         data = client.recv(1024)
         if len(data) == 0:
@@ -48,7 +49,9 @@ def recoitTout(server_socket,client,id,clientrequest):
             server_socket.close()
             break
         #print(f"J{id}:{str(data)[2:-1]}")
-        clientrequest[id-1] = str(data)[2:-1]
+        if data != data2 :
+            clientrequest[id-1] = str(data)[2:4]
+            data2=data
 
 
 '''def connect(server_socket):
@@ -80,9 +83,12 @@ def sendTo(client_socket,message):
 
 if __name__ == "__main__":
     manager = multiprocessing.Manager()
-    clienListe = manager.list()
+    #page d'accueil
+    clienListe = manager.list() #une liste de tuple avec en [0]sck client [1]ip
+
+    #tour de jeu
     clientrequest = multiprocessing.Manager().list()
-    clientrequest.extend(range(4))
+    clientrequest.extend(range(4)) # une lise des longueure 4 contenant les reponses de chaque joueur [0]j1 [1]j2 [2]j3 [3]j4
 
     serveurSocket = StartServeur("127.0.0.1")
     threading.Thread(group=None, target=ConnectJoueur, args=(serveurSocket,clienListe,clientrequest)).start() 
