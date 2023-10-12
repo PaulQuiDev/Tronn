@@ -16,7 +16,7 @@ def StartServeur(ipNb):
     return server_socket
     
 
-def ConnectJoueur(server_socket,clienListe,clienRequest):
+def ConnectJoueur(server_socket,clienListe,clientrequest):
     while len(clienListe) < 4:
        client_socket1, client_addr1 = server_socket.accept()
        clienListe.append((client_socket1, client_addr1))
@@ -28,7 +28,7 @@ def ServeurClose(server_socket):
     server_socket.close()
 
 
-def recoit(server_socket,client_socket):# connection privilégier de J1
+'''def recoit(server_socket,client_socket):# connection privilégier de J1
     while True:
         # or 'with lock:' (instead of acquire and release)
         data = client_socket.recv(1024)
@@ -37,13 +37,11 @@ def recoit(server_socket,client_socket):# connection privilégier de J1
             server_socket.close()
             break
         #queuJ1.put(str(data)[2:-1])
-        print(str(data)[2:-1])
+        print(str(data)[2:-1])'''
 
 
-def recoitTout(server_socket,client,id,clientRequest):
+def recoitTout(server_socket,client,id,clientrequest):
     while True:
-        # or 'with lock:' (instead of acquire and release)
-        #print("reception")
         data = client.recv(1024)
         if len(data) == 0:
             print(f"J{id} déconnecter ¯\_(ツ)_/¯")
@@ -53,13 +51,13 @@ def recoitTout(server_socket,client,id,clientRequest):
         clientrequest[id-1] = str(data)[2:-1]
 
 
-def connect(server_socket):
+'''def connect(server_socket):
     while True:
         if len(clienListe) < 4:
             client_socket1, client_addr1 = server_socket.accept()
             clienListe.append((client_socket1, client_addr1))
             print(f"New connection from {client_addr1} to J{len(clienListe)}")
-            threading.Thread(group=None, target=recoitTout, args=(server_socket,client_socket1,len(clienListe))).start()
+            threading.Thread(group=None, target=recoitTout, args=(server_socket,client_socket1,len(clienListe))).start()'''
 
 
 def sendAll(clienListe, message):
@@ -92,6 +90,7 @@ if __name__ == "__main__":
     while True:
         s = input()
         print(clientrequest)
+    
     ServeurClose(serveurSocket)
         
         
