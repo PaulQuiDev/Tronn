@@ -2,46 +2,45 @@ import socket
 import multiprocessing
 import threading
 
+IP = "192.168.116.212" # PUT SERVER IP HERE
 
-# importe ===========================
+#functions =============================
 
-
-# initialiser les truc =============================
-
-
+# listen data send from the sever
 def receptionClient(sck, queue):
     while True:
-        # or 'with lock:' (instead of acquire and release)
         data = sck.recv(1024)
         if len(data) == 0:
             print("déconnecter du serveur ¯\_(ツ)_/¯")
             sck.close()
             break
-        queue.put(data)
-        #print(data)
+        queue.put(str(data.decode("utf-8", errors="ignore")))
 
 
-# les fonctions =======================
-
-
-def ConnectionClient(message, queue):
+# initialize connexion of a client
+# the parameter queue permit the storage of recieved informations
+def ConnectionClient(queue):
     sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # = = = = = = = = = = = == = = = = =  = = ==  = =
-    sck.connect(("127.0.0.1", 8888))
-    print("requete connection")
-
-    # connecter =  = = = = = = = = = = = = = = = = =
+    try :
+        sck.connect((IP, 1234))
+        print("requete connection")
+    except :
+        return "E"
 
     thread = threading.Thread(group=None, target=receptionClient, args=(sck, queue))
     thread.start()
 
-    sck.send(message.encode())
     return sck
 
+def scanPlayer(sck):
+    sck.send("scan".encode())
 
+# send e masage to the server
 def Send(message, sck):
     sck.send(message.encode())
 
+
+# optional main =============================
 
 if __name__ == "__main__":
     queu = multiprocessing.Queue()
@@ -50,5 +49,4 @@ if __name__ == "__main__":
 
     while True:
         s = input()
-        # print(queu.get())
         Send(s, sck)
