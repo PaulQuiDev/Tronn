@@ -27,9 +27,15 @@ def receptionClient(sck, queue):
 def ConnectionClient(message, queue):
     sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # = = = = = = = = = = = == = = = = =  = = ==  = =
-    sck.connect(("127.0.0.1", 8888))
     print("requete connection")
-
+    try :
+        sck.connect(("127.0.0.1", 8888))
+        print("conection réusite")
+    except :
+        print("conection error")
+        return "E"
+    
+        
     # connecter =  = = = = = = = = = = = = = = = = =
 
     thread = threading.Thread(group=None, target=receptionClient, args=(sck, queue))
