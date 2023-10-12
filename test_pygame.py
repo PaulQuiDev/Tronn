@@ -15,10 +15,6 @@ bkg = (150,150,150)
 mainc=(40, 40, 40)
 line=(200,200,255)
 answer = multiprocessing.Queue()
-'''answer.put("-x/+y/+x/-y")
-answer.put("-x/+y/+x/-y")
-answer.put("-x/+y/+x/-y")
-answer.put("+y/+x/-y/-x")'''
 # displaying a window and background
 surface = pygame.display.set_mode((1505, 1010)) 
 surface.fill(bkg)
@@ -42,8 +38,7 @@ def debut(player):
         color =(255,255,0)
         start = (int(1485*maingame.startPointJ3[0]/33)-5,int(990*maingame.startPointJ3[1]/33)+5)
         startF= (start[0]-5,start[1]-2)
-        print("initial")
-
+        
     if player ==4:
         color=(0,0,255)
         start= (int(1485*maingame.startPointJ4[0]/33),int(990*maingame.startPointJ4[1]/33)+5)
@@ -60,6 +55,9 @@ def avancer(x,y,direction,color):
     #define numer of pixels for an horizontal (x) or vertical (y) mouve
     xunit = 45
     yunit=30
+    newx =0
+    newy=0
+
     if direction =="+x":
         newx= x+xunit
         newy = y
@@ -178,7 +176,7 @@ sck= CliReso.ConnectionClient(answer)
 # Game Loop
 while True: 
 
-    clock.tick(5) #manage fps rate 
+    clock.tick(2) #manage fps rate 
 
     # Check for event if user has pushed any event
     for event in pygame.event.get():   
@@ -207,7 +205,9 @@ while True:
             CliReso.Send(direction_current,sck)
     
     if answer.empty()==False:
-        update= answer.get()
+        update= str(answer.get())
+        update= update[2:-1]
+        #print(update)
         up_split = update.split('/')
         globalDirection = up_split[0]
         gD2= up_split[1]
