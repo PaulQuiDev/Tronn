@@ -47,6 +47,10 @@ def ConnectionClient(message, queue):
 
 def Send(message, sck):
     sck.send(message.encode())
+    
+
+
+
 
 
 if __name__ == "__main__":

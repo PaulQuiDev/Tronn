@@ -48,6 +48,7 @@ def recoitTout(server_socket,client,id,clientrequest):
             server_socket.close()
             break
         #print(f"J{id}:{str(data)[2:-1]}")
+        
         clientrequest[id-1] = str(data)[2:-1]
 
 
@@ -88,7 +89,7 @@ if __name__ == "__main__":
     threading.Thread(group=None, target=ConnectJoueur, args=(serveurSocket,clienListe,clientrequest)).start() 
     #lancer fonction connectJoueur()
     while True:
-        s = input()
+        #s = input()
         print(clientrequest)
     
     ServeurClose(serveurSocket)
