@@ -87,6 +87,7 @@ def avancer(x,y,direction,color):
     elif newy<10:
         newy=10
 
+
     #draw mouve
     pygame.draw.line(surface,color,(x,y),(newx,newy),width=5)
     pygame.display.flip()
