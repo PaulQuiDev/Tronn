@@ -9,7 +9,7 @@ def Start():
     bkg = (250,250,250)
     mainc=(40, 40, 40)
     shadow=(80,80,80)
-    connecté =[]#("client socket","001.0235.2359.002"),("client socket","001.0235.2359.002"),("client socket","001.0235.2359.002")]
+    connecté =[("client socket","001.0235.2359.002"),("client socket","001.0235.2359.002"),("client socket","001.0235.2359.002")]
 
     #affichage du fond 
 
@@ -34,6 +34,8 @@ def Start():
     text = font.render('Press any key to Start Game...', True, bkg, mainc)
     surface.blit(text, (540,940))
     pygame.display.flip()
+
+    start = False
     
     
     while True:
@@ -44,7 +46,7 @@ def Start():
         time.sleep(0.5)'''
 
         # affichage des client connecté en temps réel
-        if len(connecté)!=0:
+        if len(connecté)!=0 and start == False:
             y= 300
             for i in range(len(connecté)):
                 textshow = "joueur "+str(i+1)+"  "+connecté[i][1]+".............................................connect"
@@ -58,6 +60,7 @@ def Start():
             if event.type == pygame.KEYDOWN:
                 surface.fill((0,0,0))
                 pygame.display.flip()
+                start=True
             
             # quite pygame
             if event.type == pygame.QUIT: 

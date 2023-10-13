@@ -1,3 +1,16 @@
+# initialisation= = = = = = = = = = = = = = = = = = = = = = = = = =
+
+rows, cols = (35,35)
+
+# initialize start point for each players
+startPointJ1=(17,1)
+startPointJ2=(1,17)
+startPointJ3=(17,rows-2)
+startPointJ4=(cols-2,17)
+
+# functions = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+#function : return game board
 def initialisation ():
     #initialize board size
     rows, cols = (35,35)
@@ -11,15 +24,6 @@ def initialisation ():
         tab[j][0]='_'
         tab[j][(cols-1)]='_'
     return tab
-
-rows, cols = (35,35)
-# initialize start point for each players
-startPointJ1=(17,1)
-startPointJ2=(1,17)
-startPointJ3=(17,rows-2)
-startPointJ4=(cols-2,17)
-
-#= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # function : print board in terminal
 def affichage(tab):
@@ -38,16 +42,11 @@ def jouer(player,x,y,tab,dead):
         return True
     else:
         return False
-    
+
+# remouve dead player from board    
 def erase(player,tab):
     for i in range(rows):
         for j in range(cols):
             if tab[i][j]==player:
                 tab[i][j]=0
     return tab
-    
-    
-#= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-# print tab in terminal
-#affichage(tab)

@@ -3,9 +3,10 @@ import pygame
 from pygame.locals import *
 import sys
 import multiprocessing
-import maingame
 import CliReso
-import time
+import maingame
+import socket
+#initialize = = = = = = = = = = = = = = = = = = = = = = = = 
 
 # initializing imported module, clock and colors
 pygame.init() 
@@ -15,12 +16,15 @@ start=(0,0)
 bkg = (150,150,150)
 mainc=(40, 40, 40)
 line=(200,200,255)
+shadow=(80,80,80)
 answer = multiprocessing.Queue()
+connecte =[]
+
 # displaying a window and background
 surface = pygame.display.set_mode((1505, 1010)) 
 surface.fill(bkg)
 
-#= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+#Functions = = = = = = = = = = = = = = = = = = = = = = = = 
 
 # function : initialize start players position
 def debut(player):
@@ -131,27 +135,98 @@ def Yconvert_px_to_index(ypx):
         y=int(ypx*33/990)+1
     return y
 
+# fuction : erase a color from window 
 def erase(color):
     arr = pygame.PixelArray(surface)
     arr.replace(color, bkg)
     del arr
-#= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-   
-# Drawing background grid
-pygame.draw.rect(surface, mainc,pygame.Rect(10, 10, 1485, 990))
-for i in range(10,1485,45):
-    pygame.draw.line(surface,line,(i,10),(i,1000))
-pygame.draw.line(surface,line,(1495,10),(1495,1000))
 
-for i in range(10,991,30):
-    pygame.draw.line(surface,line,(10,i),(1495,i))
-pygame.draw.line(surface,line,(10,1495),(1000,1495))
+# Connexion menu = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-pygame.display.flip() #refresh rendering  
+# affichage du menu de connexion
+start = False
+sck= CliReso.ConnectionClient(answer) # start connection !
 
-# creat setup variable and initialize game
+pygame.draw.rect(surface, mainc,pygame.Rect(10, 210, 1485, 790))
+pygame.draw.rect(surface, mainc,pygame.Rect(20, 20, 1465, 170))
+
+#affichage du titre
+font = pygame.font.SysFont('urwbookman', 52)
+text = font.render('Welcome in Tron Game !', True, bkg, mainc)
+surface.blit(text, (450,80))
+pygame.draw.rect(surface,shadow,pygame.Rect(450,250,650,650))
+pygame.display.flip()
+
+# affichage de la consigne
+font = pygame.font.SysFont('urwbookman', 30)
+text = font.render('Press enter key to Start Game...', True, bkg, mainc)
+surface.blit(text, (540,940))
+pygame.display.flip()
+
+while True :
+    
+    if answer.empty() != True:
+        CliReso.scanPlayer(sck)
+        rep = answer.get().decode("utf-8", errors="ignore")
+
+        #print(nbClient + " recu ")
+        nbClient = rep.split("#")
+        nbClient = nbClient[0].split("/")
+        connecte = nbClient[0:-1]
+        #print("connecte = " + str(connecte))
+        
+    if len(connecte)!=0 and start == False:
+        y= 300
+        for i in range(len(connecte)):
+            textshow = "joueur "+str(i+1)+"  "+connecte[i]+".............................................connect"
+            font = pygame.font.SysFont('urwbookman', 15)
+            text = font.render(textshow, True, bkg, shadow)
+            surface.blit(text, (500,y+i*30))
+            pygame.display.flip()
+
+    for event in pygame.event.get():   
+        # quit event
+        if event.type == pygame.QUIT: 
+            pygame.quit()
+            sys.exit()
+        #user key press event
+        if event.type == pygame.KEYDOWN and start==False:
+            
+            if event.key == K_RETURN:
+                start=True
+                CliReso.Send("ready",sck)
+    if start:
+        # Drawing background grid
+        pygame.draw.rect(surface, mainc,pygame.Rect(10, 10, 1485, 990))
+        for i in range(10,1485,45):
+            pygame.draw.line(surface,line,(i,10),(i,1000))
+        pygame.draw.line(surface,line,(1495,10),(1495,100))
+        for i in range(10,991,30):
+            pygame.draw.line(surface,line,(10,i),(1495,i))
+        pygame.display.flip() #refresh rendering 
+        break
+
+
+ 
+# create, setup variable and initialize game = = = = = = = = = = = = = = = = = = = = = = = = = =
+rep_split = rep.split('/')
 playercurrent = 1
-direction_current="+y"
+for i in range(len(rep_split)):
+    print(rep_split[i][18:23])
+    print(sck.getsockname()[1])
+    if int(rep_split[i][18:23])== int(sck.getsockname()[1]) :
+        playercurrent = (i+1)
+        break
+print(f"you are J{playercurrent}")
+if playercurrent == 1 :
+    direction_current="+y"
+elif playercurrent ==2 :
+    direction_current="+x"
+elif playercurrent ==3 :
+    direction_current="-y"
+elif playercurrent == 4 :
+    direction_current="-x"
+
 
 
 start1,color1 = debut(1)
@@ -170,14 +245,16 @@ start4,color4 = debut(4)
 x4,y4=start4
 gD4 = "-x"
 
-sck= CliReso.ConnectionClient(answer)
 dead = False
 
-#= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-  
-# Game Loop
-while True: 
+while answer.empty():
+    try :
+        print(answer.get())
+    except:
+        print('fini')
+#Game Loop = = = = = = = = = = = = = = = = = = = = = = = = = =
 
+while start: 
     clock.tick(3) #manage fps rate 
 
     # Check for event if user has pushed any event
@@ -190,36 +267,35 @@ while True:
 
         #user key press event
         if event.type == pygame.KEYDOWN:
+            
             #manage vertical mouve
             if direction_current=="+y" or direction_current=="-y":
                 if event.key == K_RIGHT:
                     direction_current=changementDir(direction_current,"D")
                 if event.key == K_LEFT:
                     direction_current=changementDir(direction_current,"G")
-
             #manage horizontal mouve
             elif direction_current=="+x" or direction_current=="-x":
                 if event.key == K_UP:
                     direction_current=changementDir(direction_current,"H")
                 if event.key == K_DOWN:
                     direction_current=changementDir(direction_current,"B")
+    
+    # send new direction to server if player is not dead
     if sck!="E" and dead==False:
         CliReso.Send(direction_current,sck)
     
-    #time.sleep(1)
+    # read answer queue from server and updat directions
     if answer.empty()==False:
         update= answer.get()
         update = update.decode("utf-8",errors = "ignore")
-        #update= update[2:-1]
-        print(update)
         up_split = update.split('/')
         globalDirection = up_split[0]
         gD2= up_split[1]
         gD3 = up_split[2]
         gD4 = up_split[3]
 
-        # look the save matrix (maingame.tab), if case are free, move forward
-        #if maingame.jouer(playercurrent,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
+        #move player if he's not dead
         if globalDirection == "-1" or dead:
             erase(color1)
             pygame.display.flip()
