@@ -3,7 +3,7 @@ import socket
 import threading
 import maingame
 
-IP = "172.21.72.156" #CHANGE IP HERE
+IP = "192.168.116.212" #CHANGE IP HERE
 
 
 # functions ========================
@@ -45,8 +45,18 @@ def recoitTout(server_socket,client,id,clientrequest):
                 scan += str(clienListe[i][1])+"/"
             scan += "#"
             sendTo(client,scan)
-        clientrequest[id-1] = str(data.decode("utf-8", errors="ignore"))[0:2]
-        reception.put(clientrequest)
+        else :
+            clientrequest[id-1] = str(data.decode("utf-8", errors="ignore"))[0:2]
+            if clientrequest[id-1]=="re":
+                if id==1:
+                    ready[0] =True
+                elif id ==2:
+                    ready[1]=True
+                elif id==3:
+                    ready[2]=True
+                elif id ==4:
+                    ready[3]=True
+            reception.put(clientrequest)
 
 #send a mesage to all players
 def sendAll(clienListe, message):
@@ -106,6 +116,10 @@ if __name__ == "__main__":
     dead3= False
     dead4 = False
 
+    manager2 = multiprocessing.Manager()
+    ready = manager2.list()
+    ready =[False,False,False,False]
+
     #starting server and thread of player connexion
     serveurSocket = StartServeur(IP)
     threading.Thread(group=None, target=ConnectJoueur, args=(serveurSocket,clienListe,clientrequest)).start() 
@@ -114,7 +128,8 @@ if __name__ == "__main__":
         reponse =""
         if reception.empty()==False :
             retour = reception.get()
-            if retour[0:5] =="ready":
+            print(retour)
+            if all(i==True for i in ready):
 
                 #test if player 1 dead
                 if maingame.jouer(1,x1,y1,board,dead1):

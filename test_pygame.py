@@ -194,7 +194,7 @@ while True :
             
             if event.key == K_RETURN:
                 start=True
-                CliReso.Send("ready",sck)
+                CliReso.Send("re",sck)
     if start:
         # Drawing background grid
         pygame.draw.rect(surface, mainc,pygame.Rect(10, 10, 1485, 990))
@@ -209,12 +209,21 @@ while True :
 
  
 # create, setup variable and initialize game = = = = = = = = = = = = = = = = = = = = = = = = = =
+print(rep)
+rep=rep
+rep = rep[0:-2]
 rep_split = rep.split('/')
-playercurrent = 1
+compare=[]
+print(rep_split)
 for i in range(len(rep_split)):
-    print(rep_split[i][18:23])
+    part= rep_split[i].split(',')
+    compare.append( part[1][1:-1])
+
+playercurrent = 1
+for i in range(len(compare)):
+    print(compare[i])
     print(sck.getsockname()[1])
-    if int(rep_split[i][18:23])== int(sck.getsockname()[1]) :
+    if int(compare[i])== int(sck.getsockname()[1]) :
         playercurrent = (i+1)
         break
 print(f"you are J{playercurrent}")

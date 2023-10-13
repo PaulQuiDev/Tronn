@@ -2,7 +2,7 @@ import socket
 import multiprocessing
 import threading
 
-IP = "172.21.72.156" # PUT SERVER IP HERE
+IP = "192.168.116.212" # PUT SERVER IP HERE
 
 #functions =============================
 
@@ -14,7 +14,7 @@ def receptionClient(sck, queue):
             print("déconnecter du serveur ¯\_(ツ)_/¯")
             sck.close()
             break
-        queue.put(data)
+        queue.put(str(data.decode("utf-8", errors="ignore")))
 
 
 # initialize connexion of a client
