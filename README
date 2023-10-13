@@ -1,0 +1,22 @@
+					README
+					
+	WHO ?
+This work was realised by Paul Raguet and Maëlle Roche
+
+	QUICK START ?
+1- open "SerReso.Py" file, put your IP on line 6 
+2- open "CliReso.py" file, put the server IP on line 5 
+	( if you want to run server localy, IP is "127.0.0.1")
+3- execute "SerReso.py" in a terminal
+4- execute "test_pygame.py" in a other terminal
+5- you're now on connexion menu, when 4 player are connected press ENTER
+6 - game start, you can controle your player with arrows
+
+	RULES ?
+This is a TRON game, you play one of the colored player on the screen. 
+You can controll it with arrows on your key board.
+if you touch border of the window, other player mark or your own mark, you died and you will be disconnect.
+If 2 players collide in front impact, the lowest number player will survive :   1>2>3>4
+If a player died, his mark turn to grey. 
+Other alived player can play on grey mark without die.
+The last player alived won.
