@@ -1,16 +1,18 @@
+def initialisation ():
+    #initialize board size
+    rows, cols = (35,35)
+    tab = [[0 for i in range(cols)] for j in range(rows)]
 
-#initialize board size
+    #fix board boarders
+    for i in range(cols):
+        tab[0][i]='_'
+        tab[(rows-1)][i]='_'
+    for j in range(rows):
+        tab[j][0]='_'
+        tab[j][(cols-1)]='_'
+    return tab
+
 rows, cols = (35,35)
-tab = [[0 for i in range(cols)] for j in range(rows)]
-
-#fix board boarders
-for i in range(cols):
-    tab[0][i]='_'
-    tab[(rows-1)][i]='_'
-for j in range(rows):
-    tab[j][0]='_'
-    tab[j][(cols-1)]='_'
-
 # initialize start point for each players
 startPointJ1=(17,1)
 startPointJ2=(1,17)
@@ -30,8 +32,8 @@ def affichage(tab):
         print()
 
 # function: check if the case are available, add a mouve markdown
-def jouer(player,x,y,tab):
-    if tab[x][y]==0 :
+def jouer(player,x,y,tab,dead):
+    if tab[x][y]==0 and dead == False:
         tab[x][y]=player
         return True
     else:
@@ -42,6 +44,7 @@ def erase(player,tab):
         for j in range(cols):
             if tab[i][j]==player:
                 tab[i][j]=0
+    return tab
     
     
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

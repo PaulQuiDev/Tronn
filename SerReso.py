@@ -1,6 +1,8 @@
 import multiprocessing
 import socket
 import threading
+import maingame
+import time
 
 
 # les imports =====================================
@@ -52,10 +54,12 @@ def recoitTout(server_socket,client,id,clientrequest):
             break
         #print(f"J{id}:{str(data)[2:-1]}")
         #if data != data2 :
-        clientrequest[id-1] = str(data)[2:4]
+        clientrequest[id-1] = str(data.decode("utf-8", errors="ignore"))[0:2]
         #print(str(id-1) + " " + str(data)[2:4])
         reception.put(clientrequest)
-        #  data2=data
+        #data2=data
+
+
 
 
 '''def connect(server_socket):
@@ -81,6 +85,19 @@ def sendAll(clienListe, message):
 def sendTo(client_socket,message):
     client_socket.send(message.encode())
 
+def direction_to_XY(direction,oldx,oldy):
+    newx = oldx
+    newy = oldy
+    if direction =="+x" and newx<= 34:
+        newy +=1
+    elif direction =="-x"and newx>= 1:
+        newy-=1
+    elif direction =="+y"and newy<= 34:
+        newx +=1
+    elif direction =="-y"and newy>= 1:
+        newx-=1
+    #print("old : "+str(oldx)+" "+str(oldy)+" new : "+str(newx)+" "+str(newy))
+    return newx,newy
 
 # les definitions =============================
 
@@ -96,18 +113,71 @@ if __name__ == "__main__":
     clientrequest = multiprocessing.Manager().list()
     clientrequest =["+y","+x","-y","-x"] # une lise des longueure 4 contenant les reponses de chaque joueur [0]j1 [1]j2 [2]j3 [3]j4
 
+    board = maingame.initialisation()
+    startPointJ1=(17,1)
+    startPointJ2=(1,17)
+    startPointJ3=(17,35-2)
+    startPointJ4=(35-2,17)
+
+    y1,x1 = startPointJ1
+    y2,x2 = startPointJ2
+    y3,x3 = startPointJ3
+    y4,x4 = startPointJ4
+
+    dead1 = False
+    dead2 = False
+    dead3= False
+    dead4 = False
+
     serveurSocket = StartServeur("127.0.0.1")
     threading.Thread(group=None, target=ConnectJoueur, args=(serveurSocket,clienListe,clientrequest)).start() 
     #lancer fonction connectJoueur()
+    
     while True:
        
         reponse =""
         #time.sleep(0.1)
         if reception.empty()==False :
             retour = reception.get()
-            for i in range(4):
-                reponse += str(retour[i])+"/"
+
+            if maingame.jouer(1,x1,y1,board,dead1):
+                reponse += str(retour[0])+"/"
+                x1,y1 = direction_to_XY(retour[0],x1,y1)
+            else:
+                reponse += str(-1)+"/"
+                board =maingame.erase(1,board)
+                dead1=True
+                print("\n\n\n=====================\n mort j1")
+
+            if maingame.jouer(2,x2,y2,board,dead2):
+                reponse += str(retour[1])+"/"
+                x2,y2 = direction_to_XY(retour[1],x2,y2)
+            else:
+                reponse += str(-1)+"/"
+                board =maingame.erase(2,board)
+                dead2=True
+                print("\n\n\n=====================\n mort j2")
+
+            if maingame.jouer(3,x3,y3,board,dead3):
+                reponse += str(retour[2])+"/"
+                x3,y3 = direction_to_XY(retour[2],x3,y3)
+            else:
+                reponse += str(-1)+"/"
+                board =maingame.erase(3,board)
+                dead3=True
+                print("\n\n\n=====================\n mort j3")
+
+            if maingame.jouer(4,x4,y4,board,dead4):
+                reponse += str(retour[3])+"/"
+                x4,y4 = direction_to_XY(retour[3],x4,y4)
+            else:
+                reponse += str(-1)+"/"
+                board = maingame.erase(4,board)
+                dead4=True
+                print("\n\n\n=====================\n mort j4")
+                            
             sendAll(clienListe,reponse)
+            maingame.affichage(board)
     
     
     

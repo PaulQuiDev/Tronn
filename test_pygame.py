@@ -5,6 +5,7 @@ import sys
 import multiprocessing
 import maingame
 import CliReso
+import time
 
 # initializing imported module, clock and colors
 pygame.init() 
@@ -150,7 +151,7 @@ pygame.display.flip() #refresh rendering
 
 # creat setup variable and initialize game
 playercurrent = 1
-direction_current="+x"
+direction_current="+y"
 
 
 start1,color1 = debut(1)
@@ -170,13 +171,14 @@ x4,y4=start4
 gD4 = "-x"
 
 sck= CliReso.ConnectionClient(answer)
+dead = False
 
 #= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
   
 # Game Loop
 while True: 
 
-    clock.tick(2) #manage fps rate 
+    clock.tick(3) #manage fps rate 
 
     # Check for event if user has pushed any event
     for event in pygame.event.get():   
@@ -201,26 +203,55 @@ while True:
                     direction_current=changementDir(direction_current,"H")
                 if event.key == K_DOWN:
                     direction_current=changementDir(direction_current,"B")
-        if sck!="E":
-            CliReso.Send(direction_current,sck)
+    if sck!="E" and dead==False:
+        CliReso.Send(direction_current,sck)
     
+    #time.sleep(1)
     if answer.empty()==False:
-        update= str(answer.get())
-        update= update[2:-1]
-        #print(update)
+        update= answer.get()
+        update = update.decode("utf-8",errors = "ignore")
+        #update= update[2:-1]
+        print(update)
         up_split = update.split('/')
         globalDirection = up_split[0]
         gD2= up_split[1]
         gD3 = up_split[2]
         gD4 = up_split[3]
 
-    # look the save matrix (maingame.tab), if case are free, move forward
-    #if maingame.jouer(playercurrent,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
-    x1,y1=avancer(x1,y1,globalDirection,color1)
-    x2,y2=avancer(x2,y2,gD2,color2)
-    x3,y3=avancer(x3,y3,gD3,color3)
-    x4,y4=avancer(x4,y4,gD4,color4)
-    
+        # look the save matrix (maingame.tab), if case are free, move forward
+        #if maingame.jouer(playercurrent,Yconvert_px_to_index(y),Xconvert_px_to_index(x), maingame.tab):
+        if globalDirection == "-1" or dead:
+            erase(color1)
+            pygame.display.flip()
+            if playercurrent ==1:
+                dead=True
+        else:
+            x1,y1=avancer(x1,y1,globalDirection,color1)
 
+        if gD2 =="-1" or dead:
+            erase(color2)
+            pygame.display.flip()
+            if playercurrent ==2:
+                dead=True
+        else :
+            x2,y2=avancer(x2,y2,gD2,color2)
+
+        if gD3 == "-1" or dead:
+            erase(color3)
+            pygame.display.flip()
+            if playercurrent ==3:
+                dead=True
+        else : 
+            x3,y3=avancer(x3,y3,gD3,color3)
+
+        if gD4 =="-1" or dead:
+            erase(color4)
+            pygame.display.flip()
+            if playercurrent ==4:
+                dead=True
+        else :
+            x4,y4=avancer(x4,y4,gD4,color4)
         
+
+            
 
